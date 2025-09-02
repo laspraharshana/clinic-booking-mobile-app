@@ -16,8 +16,8 @@ app.use(
     windowMs: 60_000,
     max: 120,
     standardHeaders: true,
-    legacyHeaders: false
-  })
+    legacyHeaders: false,
+  }),
 );
 
 // Routes
