@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import health from './routes/health.js';
+import doctors from './routes/doctors.js';
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(
 
 // Routes
 app.use('/healthz', health);
+app.use('/v1/doctors', doctors);
 
 // Root
 app.get('/', (_req, res) => res.json({ name: 'clinic-booking-api', version: '0.1.0' }));
