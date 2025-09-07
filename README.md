@@ -24,4 +24,3 @@ Starter backend using Node.js + Express + TypeScript.
 - npm run build — compile to dist/
 - npm run start — run compiled build
 - npm run lint / npm run format
-

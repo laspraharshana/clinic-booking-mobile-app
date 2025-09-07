@@ -5,7 +5,6 @@ import rateLimit from 'express-rate-limit';
 import health from './routes/health.js';
 import doctors from './routes/doctors.js';
 
-
 const app = express();
 
 const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
