@@ -1,5 +1,8 @@
 import type { Request, Response, NextFunction } from 'express';
-import { listDoctors as listDoctorsSvc, listDoctorSlots as listSlotsSvc } from '../services/doctors.service.js';
+import {
+  listDoctors as listDoctorsSvc,
+  listDoctorSlots as listSlotsSvc,
+} from '../services/doctors.service.js';
 import { listSlotsParamsSchema } from '../validators/doctors.schema.js';
 
 export async function listDoctors(_req: Request, res: Response, next: NextFunction) {
