@@ -57,6 +57,25 @@ router.get('/list', async (req, res, next) => {
   } catch (e) {
     next(e);
   }
+}); // PUT /v1/appointments/:id → update (reschedule) appointment
+router.put('/:id', async (req, res, next) => {
+  try {
+    const id = z.string().parse(req.params.id);
+
+    const data = z
+      .object({
+        startUtc: z.number(),
+        endUtc: z.number(),
+      })
+      .parse(req.body);
+
+    const docRef = db.collection('appointments').doc(id);
+    await docRef.update({ ...data, updatedAt: Date.now() });
+
+    res.json({ ok: true, id });
+  } catch (e) {
+    next(e);
+  }
 });
 
 export default router;

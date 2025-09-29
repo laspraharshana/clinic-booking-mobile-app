@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import health from './routes/health.js';
 import doctorsRouter from './routes/doctors.routes.js';
+import appointmentsRouter from './routes/appointments.js';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(rateLimit({ windowMs: 60_000, max: 120, standardHeaders: true, legacyHea
 // Routes
 app.use('/healthz', health);
 app.use('/v1/doctors', doctorsRouter);
+app.use('/v1/appointments', appointmentsRouter);
 
 // Error handler
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
