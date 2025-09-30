@@ -48,6 +48,7 @@ router.delete('/cancel/:id', async (req, res, next) => {
 // GET /v1/appointments/list?doctorId= → get doctor appointments
 router.get('/list', async (req, res, next) => {
   try {
+    console.log('<<<<< HIT THE /v1/appointments/list ROUTE HANDLER >>>>');
     const doctorId = z.string().parse(req.query.doctorId);
 
     const snap = await db.collection('appointments').where('doctorId', '==', doctorId).get();
