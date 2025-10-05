@@ -3,6 +3,13 @@ export type Doctor = {
   name: string;
   specialty?: string;
   clinicName?: string;
+  address?: string;
+  bio?: string;
+  yearsExp?: number;
+  patientsCount?: number;
+  rating?: number;
+  consultationFee?: number;
+  photoUrl?: string;
 };
 
 export type Slot = {

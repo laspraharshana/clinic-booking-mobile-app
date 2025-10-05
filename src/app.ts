@@ -12,11 +12,13 @@ const app = express();
 
 const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
 
-app.use(cors({
-origin: true, // reflect the request origin
-methods: ['GET','POST','PATCH','DELETE','OPTIONS'],
-allowedHeaders: ['Content-Type','Authorization'],
-}));
+app.use(
+  cors({
+    origin: true, // reflect the request origin
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+);
 app.options('*', cors()); // handle preflight
 
 // In your app.js
