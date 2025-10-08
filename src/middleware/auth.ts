@@ -4,7 +4,7 @@ import type { DecodedIdToken } from 'firebase-admin/auth'; // <--- Add this impo
 
 // Define a type that includes your custom 'role' claim
 interface CustomDecodedToken extends DecodedIdToken {
-    role?: 'patient' | 'doctor' | 'admin'; // Custom claim added by you
+  role?: 'patient' | 'doctor' | 'admin'; // Custom claim added by you
 }
 
 export interface AuthedRequest extends Request {
@@ -25,7 +25,7 @@ export async function requireAuth(req: AuthedRequest, res: Response, next: NextF
     const decodedWithRole = decoded as CustomDecodedToken;
 
     // Access the role property safely
-    const role = decodedWithRole.role; 
+    const role = decodedWithRole.role;
 
     req.user = { uid: decoded.uid, email: decoded.email, role };
     next();
