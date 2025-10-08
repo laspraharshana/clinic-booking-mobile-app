@@ -10,7 +10,7 @@ import adminUsersRouter from './routes/admin.users.routes.js';
 
 const app = express();
 
-const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
+//const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').filter(Boolean);
 
 app.use(
   cors({
