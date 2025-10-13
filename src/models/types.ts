@@ -20,3 +20,25 @@ export type Slot = {
   status: 'available' | 'booked';
   bookedBy?: string | null;
 };
+
+export type Fee = {
+  consultation: number;
+  platform: number;
+  total: number;
+  currency: 'LKR';
+};
+
+export type Appointment = {
+  id: string;           // same as slotId
+  slotId: string;
+  doctorId: string;
+  patientId: string;
+  patientName?: string;
+  startUtc: number;
+  endUtc: number;
+  status: 'booked' | 'canceled';
+  notes?: string; 
+  fee: Fee;
+  createdAt: number;
+  canceledAt?: number;
+};
