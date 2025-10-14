@@ -58,7 +58,15 @@ export async function getDashboardCtrl(_req: AuthedRequest, res: Response, next:
     const recentAppointments = await getRecentAppointments(10);
 
     // Calculate earnings (sum of appointment fees)
-    const earnings = recentAppointments.reduce((sum, appt) => sum + (appt.fee || 0), 0);
+    const earnings = recentAppointments.reduce((sum, appt) => {
+      const feeTotal =
+        typeof appt.fee === 'object' && appt.fee?.total
+          ? Number(appt.fee.total)
+          : typeof appt.fee === 'number'
+            ? appt.fee
+            : 0;
+      return sum + feeTotal;
+    }, 0);
 
     // Respond with dashboard JSON
     res.json({
@@ -66,6 +74,7 @@ export async function getDashboardCtrl(_req: AuthedRequest, res: Response, next:
       totalPatients: patients.length,
       recentAppointments,
       earnings,
+      earningsCurrency: 'LKR',
     });
   } catch (e) {
     next(e);
