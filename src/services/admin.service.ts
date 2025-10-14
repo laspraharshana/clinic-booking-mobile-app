@@ -1,7 +1,7 @@
 import { admin, db } from '../lib/firebase.js';
 import { usersRepo } from '../repositories/users.repo.js';
-import { doctorsRepo } from '../repositories/doctors.repo.js';
-import { appointmentsRepo } from '../repositories/appointments.repo.js';
+//import { doctorsRepo } from '../repositories/doctors.repo.js';
+//import { appointmentsRepo } from '../repositories/appointments.repo.js';
 
 /**
  * Set user role (patient/doctor/admin)

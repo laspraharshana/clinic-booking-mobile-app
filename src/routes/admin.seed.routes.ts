@@ -1,7 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { db } from '../lib/firebase.js';
-import { doctorsRepo } from '../repositories/doctors.repo.js';
-import { slotsRepo } from '../repositories/slots.repo.js';
+//import { doctorsRepo } from '../repositories/doctors.repo.js';
+//import { slotsRepo } from '../repositories/slots.repo.js';
 import { book } from '../services/appointments.service.js';
 import multer from 'multer';
 import { getStorage } from 'firebase-admin/storage';

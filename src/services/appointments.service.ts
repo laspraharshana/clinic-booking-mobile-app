@@ -5,6 +5,16 @@ import { doctorsRepo } from '../repositories/doctors.repo.js';
 import { appointmentsRepo } from '../repositories/appointments.repo.js';
 import type { Appointment, Fee } from '../models/types.js';
 
+// Define the Slot interface here, at the top level, so it can be reused.
+// It includes all properties used throughout the file.
+interface Slot {
+  status: 'available' | 'booked';
+  startUtc: number;
+  endUtc: number;
+  doctorId: string;
+  bookedBy: string | null;
+}
+
 const PLATFORM_FEE_LKR = Number(process.env.PLATFORM_FEE_LKR ?? '5');
 
 async function computeFee(doctorId: string): Promise<Fee> {
@@ -48,7 +58,9 @@ export async function book(
     const slotSnap = await tx.get(slotRef);
     if (!slotSnap.exists) throw new HttpError(404, 'Slot not found', { code: 'SLOT_NOT_FOUND' });
 
-    const slot = slotSnap.data() as any;
+    // Use the Slot interface defined at the top of the file.
+    const slot = slotSnap.data() as Slot;
+
     if (slot.status !== 'available')
       throw new HttpError(409, 'Slot already booked', { code: 'SLOT_TAKEN' });
     if (slot.startUtc <= now)
@@ -56,9 +68,9 @@ export async function book(
 
     const fee = await computeFee(slot.doctorId);
 
-    // Prepare appointment doc id = slotId
     const apptRef = appointmentsRepo.ref(slotId);
 
+    // This uses the 'Appointment' type you imported.
     const appointment: Omit<Appointment, 'id'> = {
       slotId,
       doctorId: slot.doctorId,
@@ -72,7 +84,6 @@ export async function book(
       createdAt: now,
     };
 
-    // Atomically mark slot and create appointment
     tx.update(slotRef, { status: 'booked', bookedBy: patientId, updatedAt: now });
     tx.set(apptRef, appointment, { merge: false });
 
@@ -88,7 +99,9 @@ export async function cancel(appointmentId: string, uid: string) {
     if (!apptSnap.exists)
       throw new HttpError(404, 'Appointment not found', { code: 'APPT_NOT_FOUND' });
 
-    const appt = apptSnap.data() as any;
+    // Use the imported 'Appointment' type instead of 'any'.
+    const appt = apptSnap.data() as Appointment;
+
     if (appt.patientId !== uid)
       throw new HttpError(403, 'Not your appointment', { code: 'FORBIDDEN' });
     if (appt.status !== 'booked')
@@ -101,9 +114,10 @@ export async function cancel(appointmentId: string, uid: string) {
     const slotRef = slotsRepo.ref(appointmentId);
     const slotSnap = await tx.get(slotRef);
     if (!slotSnap.exists) throw new HttpError(404, 'Slot not found', { code: 'SLOT_NOT_FOUND' });
-    const slot = slotSnap.data() as any;
+    
+    // Use the 'Slot' type instead of 'any'.
+    const slot = slotSnap.data() as Slot;
 
-    // Only release if it’s still booked by the same user
     if (slot.bookedBy !== uid)
       throw new HttpError(409, 'Slot not held by you', { code: 'CONFLICT' });
 
