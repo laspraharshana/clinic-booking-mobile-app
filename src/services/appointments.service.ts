@@ -114,7 +114,7 @@ export async function cancel(appointmentId: string, uid: string) {
     const slotRef = slotsRepo.ref(appointmentId);
     const slotSnap = await tx.get(slotRef);
     if (!slotSnap.exists) throw new HttpError(404, 'Slot not found', { code: 'SLOT_NOT_FOUND' });
-    
+
     // Use the 'Slot' type instead of 'any'.
     const slot = slotSnap.data() as Slot;
 
