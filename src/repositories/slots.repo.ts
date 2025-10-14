@@ -2,12 +2,11 @@ import { db } from '../lib/firebase.js';
 import type { Slot } from '../models/types.js';
 
 export const slotsRepo = {
-
   ref: (id: string) => db.collection('slots').doc(id),
 
   async getById(id: string): Promise<Slot | null> {
     const d = await this.ref(id).get();
-    return d.exists ? ({ id: d.id, ...(d.data() as Omit<Slot, 'id'>) }) : null;
+    return d.exists ? { id: d.id, ...(d.data() as Omit<Slot, 'id'>) } : null;
   },
 
   async listAvailableByDoctor(doctorId: string, from: number, to: number): Promise<Slot[]> {

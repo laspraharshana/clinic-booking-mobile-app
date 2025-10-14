@@ -58,7 +58,7 @@ export async function createAdminUser(req: Request, res: Response, next: NextFun
       phone: phone ?? '',
       photoUrl: null, // Use `null` to explicitly set the field as empty in Firestore
     };
-    
+
     // 5) Create the user's profile document in Firestore via the repository
     await usersRepo.upsert(userRecord.uid, profileData);
 

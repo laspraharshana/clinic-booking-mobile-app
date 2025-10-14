@@ -29,7 +29,7 @@ export type Fee = {
 };
 
 export type Appointment = {
-  id: string;           // same as slotId
+  id: string; // same as slotId
   slotId: string;
   doctorId: string;
   patientId: string;
@@ -37,7 +37,7 @@ export type Appointment = {
   startUtc: number;
   endUtc: number;
   status: 'booked' | 'canceled';
-  notes?: string; 
+  notes?: string;
   fee: Fee;
   createdAt: number;
   canceledAt?: number;

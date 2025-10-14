@@ -35,7 +35,7 @@ export async function getOrCreateProfile(uid: string) {
     phone: '',
     // 💡 CORRECTION: Changed 'null' to 'undefined' to satisfy the type
     // 'string | undefined' expected by Partial<UserProfile>.
-    photoUrl: undefined as string | undefined, 
+    photoUrl: undefined as string | undefined,
     notifications: {
       push: true,
       reminders: true,

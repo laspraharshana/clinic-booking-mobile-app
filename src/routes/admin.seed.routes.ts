@@ -51,7 +51,8 @@ interface Appointment {
 function checkAdminSecret(req: Request, res: Response, next: NextFunction) {
   const secret = process.env.DEV_ADMIN_SECRET;
   if (!secret) return res.status(500).json({ error: 'DEV_ADMIN_SECRET not set' });
-  if (req.header('x-admin-secret') !== secret) return res.status(401).json({ error: 'Unauthorized' });
+  if (req.header('x-admin-secret') !== secret)
+    return res.status(401).json({ error: 'Unauthorized' });
   next();
 }
 
@@ -67,7 +68,11 @@ const upload = multer({
 // POST /v1/admin/seed/doctors/bulk
 router.post(
   '/doctors/bulk',
-  async (req: Request<Record<string, string>, unknown, { items: DoctorSeedData[] }>, res: Response, next: NextFunction) => {
+  async (
+    req: Request<Record<string, string>, unknown, { items: DoctorSeedData[] }>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const items = Array.isArray(req.body?.items) ? req.body.items : [];
       const batch = db.batch();
@@ -89,7 +94,7 @@ router.post(
             photoUrl: d.photoUrl ?? null, // You can also set external URLs here
             updatedAt: Date.now(),
           },
-          { merge: true }
+          { merge: true },
         );
       }
       await batch.commit();
@@ -97,7 +102,7 @@ router.post(
     } catch (e) {
       next(e);
     }
-  }
+  },
 );
 
 // NEW: POST /v1/admin/seed/doctors/:id/photo (multipart upload)
@@ -131,20 +136,27 @@ router.post(
       }
 
       // Update doctor doc with photoUrl
-      await db.collection('doctors').doc(doctorId).set({ photoUrl: url, updatedAt: Date.now() }, { merge: true });
+      await db
+        .collection('doctors')
+        .doc(doctorId)
+        .set({ photoUrl: url, updatedAt: Date.now() }, { merge: true });
       const snap = await db.collection('doctors').doc(doctorId).get();
 
       res.status(201).json({ data: { id: snap.id, ...(snap.data() as Record<string, unknown>) } });
     } catch (e) {
       next(e);
     }
-  }
+  },
 );
 
 // POST /v1/admin/seed/slots/bulk
 router.post(
   '/slots/bulk',
-  async (req: Request<Record<string, string>, unknown, { items: SlotSeedData[] }>, res: Response, next: NextFunction) => {
+  async (
+    req: Request<Record<string, string>, unknown, { items: SlotSeedData[] }>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const items = Array.isArray(req.body?.items) ? req.body.items : [];
       const batch = db.batch();
@@ -164,7 +176,7 @@ router.post(
             status: s.status ?? 'available',
             bookedBy: s.bookedBy ?? null,
           },
-          { merge: true }
+          { merge: true },
         );
       }
       await batch.commit();
@@ -172,26 +184,33 @@ router.post(
     } catch (e) {
       next(e);
     }
-  }
+  },
 );
 
 // POST /v1/admin/seed/appointments/bulk
 router.post(
   '/appointments/bulk',
-  async (req: Request<Record<string, string>, unknown, { items: AppointmentSeedData[] }>, res: Response, next: NextFunction) => {
+  async (
+    req: Request<Record<string, string>, unknown, { items: AppointmentSeedData[] }>,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const items = Array.isArray(req.body?.items) ? req.body.items : [];
       const results: Appointment[] = [];
       for (const a of items) {
         if (!a.slotId || !a.patientId) continue;
-        const appt: Appointment = await book(a.slotId, a.patientId, { patientName: a.patientName, notes: a.notes });
+        const appt: Appointment = await book(a.slotId, a.patientId, {
+          patientName: a.patientName,
+          notes: a.notes,
+        });
         results.push(appt);
       }
       res.json({ ok: true, count: results.length, data: results });
     } catch (e) {
       next(e);
     }
-  }
+  },
 );
 
 // DELETE slots (dev only)
@@ -209,7 +228,9 @@ router.post('/slots/delete', async (req, res, next) => {
     } else if (Array.isArray(ids) && ids.length > 0) {
       toDelete = ids.map((id: string) => db.collection('slots').doc(id));
     } else {
-      return res.status(400).json({ error: 'Provide one of: { all:true } or { doctorId } or { ids:[...] }' });
+      return res
+        .status(400)
+        .json({ error: 'Provide one of: { all:true } or { doctorId } or { ids:[...] }' });
     }
 
     let deleted = 0;

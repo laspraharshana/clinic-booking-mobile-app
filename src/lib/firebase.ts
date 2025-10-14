@@ -36,9 +36,12 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 console.log(
   'Firebase Admin initialized.',
-  'Project:', process.env.FIREBASE_PROJECT_ID,
-  'Storage bucket:', admin.app().options.storageBucket || '(none)',
-  'Emulator:', useEmu
+  'Project:',
+  process.env.FIREBASE_PROJECT_ID,
+  'Storage bucket:',
+  admin.app().options.storageBucket || '(none)',
+  'Emulator:',
+  useEmu,
 );
 
 if (useEmu) {

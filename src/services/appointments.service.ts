@@ -22,8 +22,10 @@ async function computeFee(doctorId: string): Promise<Fee> {
 export async function quote(slotId: string) {
   const slot = await slotsRepo.getById(slotId);
   if (!slot) throw new HttpError(404, 'Slot not found', { code: 'SLOT_NOT_FOUND' });
-  if (slot.status !== 'available') throw new HttpError(409, 'Slot already booked', { code: 'SLOT_TAKEN' });
-  if (slot.startUtc <= Date.now()) throw new HttpError(400, 'Slot is in the past', { code: 'PAST_SLOT' });
+  if (slot.status !== 'available')
+    throw new HttpError(409, 'Slot already booked', { code: 'SLOT_TAKEN' });
+  if (slot.startUtc <= Date.now())
+    throw new HttpError(400, 'Slot is in the past', { code: 'PAST_SLOT' });
 
   const fee = await computeFee(slot.doctorId);
   return {
@@ -35,7 +37,11 @@ export async function quote(slotId: string) {
   };
 }
 
-export async function book(slotId: string, patientId: string, opts?: { notes?: string; patientName?: string }): Promise<Appointment> {
+export async function book(
+  slotId: string,
+  patientId: string,
+  opts?: { notes?: string; patientName?: string },
+): Promise<Appointment> {
   const now = Date.now();
   return await db.runTransaction(async (tx) => {
     const slotRef = slotsRepo.ref(slotId);
@@ -43,8 +49,10 @@ export async function book(slotId: string, patientId: string, opts?: { notes?: s
     if (!slotSnap.exists) throw new HttpError(404, 'Slot not found', { code: 'SLOT_NOT_FOUND' });
 
     const slot = slotSnap.data() as any;
-    if (slot.status !== 'available') throw new HttpError(409, 'Slot already booked', { code: 'SLOT_TAKEN' });
-    if (slot.startUtc <= now) throw new HttpError(400, 'Slot is in the past', { code: 'PAST_SLOT' });
+    if (slot.status !== 'available')
+      throw new HttpError(409, 'Slot already booked', { code: 'SLOT_TAKEN' });
+    if (slot.startUtc <= now)
+      throw new HttpError(400, 'Slot is in the past', { code: 'PAST_SLOT' });
 
     const fee = await computeFee(slot.doctorId);
 
@@ -77,12 +85,18 @@ export async function cancel(appointmentId: string, uid: string) {
   return await db.runTransaction(async (tx) => {
     const apptRef = appointmentsRepo.ref(appointmentId);
     const apptSnap = await tx.get(apptRef);
-    if (!apptSnap.exists) throw new HttpError(404, 'Appointment not found', { code: 'APPT_NOT_FOUND' });
+    if (!apptSnap.exists)
+      throw new HttpError(404, 'Appointment not found', { code: 'APPT_NOT_FOUND' });
 
     const appt = apptSnap.data() as any;
-    if (appt.patientId !== uid) throw new HttpError(403, 'Not your appointment', { code: 'FORBIDDEN' });
-    if (appt.status !== 'booked') throw new HttpError(400, 'Appointment not active', { code: 'NOT_ACTIVE' });
-    if (appt.startUtc <= now) throw new HttpError(400, 'Cannot cancel past/ongoing appointment', { code: 'PAST_OR_ONGOING' });
+    if (appt.patientId !== uid)
+      throw new HttpError(403, 'Not your appointment', { code: 'FORBIDDEN' });
+    if (appt.status !== 'booked')
+      throw new HttpError(400, 'Appointment not active', { code: 'NOT_ACTIVE' });
+    if (appt.startUtc <= now)
+      throw new HttpError(400, 'Cannot cancel past/ongoing appointment', {
+        code: 'PAST_OR_ONGOING',
+      });
 
     const slotRef = slotsRepo.ref(appointmentId);
     const slotSnap = await tx.get(slotRef);
@@ -90,7 +104,8 @@ export async function cancel(appointmentId: string, uid: string) {
     const slot = slotSnap.data() as any;
 
     // Only release if it’s still booked by the same user
-    if (slot.bookedBy !== uid) throw new HttpError(409, 'Slot not held by you', { code: 'CONFLICT' });
+    if (slot.bookedBy !== uid)
+      throw new HttpError(409, 'Slot not held by you', { code: 'CONFLICT' });
 
     tx.update(slotRef, { status: 'available', bookedBy: null, updatedAt: now });
     tx.update(apptRef, { status: 'canceled', canceledAt: now });
@@ -99,7 +114,10 @@ export async function cancel(appointmentId: string, uid: string) {
   });
 }
 
-export async function listForMe(uid: string, scope?: 'all' | 'upcoming' | 'completed' | 'canceled') {
+export async function listForMe(
+  uid: string,
+  scope?: 'all' | 'upcoming' | 'completed' | 'canceled',
+) {
   const list = await appointmentsRepo.listByPatient(uid);
   const now = Date.now();
   return list.filter((a) => {
