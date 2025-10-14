@@ -6,7 +6,7 @@ export type UserProfile = {
   name?: string;
   phone?: string;
   role: 'patient' | 'doctor' | 'admin';
-  photoUrl?: string;
+  photoUrl?: string | null;
   createdAt: number;
 };
 

@@ -8,6 +8,7 @@ import appointmentsRouter from './routes/appointments.routes.js';
 import meRouter from './routes/me.routes.js';
 import adminUsersRouter from './routes/admin.users.routes.js';
 import adminSeedRouter from './routes/admin.seed.routes.js';
+import mePaymentRouter from './routes/me.payment.routes.js';
 
 const app = express();
 
@@ -43,9 +44,10 @@ app.use('/healthz', health);
 app.use('/v1/doctors', doctorsRouter);
 app.use('/v1/appointments', appointmentsRouter);
 app.use('/v1/me', meRouter);
-app.use('/v1/admin', adminUsersRouter);
+app.use('/v1/admin/users', adminUsersRouter);
 app.use('/v1/appointments', appointmentsRouter);
 app.use('/v1/admin/seed', adminSeedRouter);
+app.use('/v1/me/payment-methods', mePaymentRouter);
 
 // Error handler
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
