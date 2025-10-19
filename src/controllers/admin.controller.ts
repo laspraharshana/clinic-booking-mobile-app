@@ -50,17 +50,17 @@ export async function setUserRoleCtrl(req: AuthedRequest, res: Response, next: N
  */
 export async function getDashboardCtrl(_req: AuthedRequest, res: Response, next: NextFunction) {
   try {
-    // Fetch doctors and patients
     const doctors = await getAllDoctors();
     const patients = await getAllPatients();
+    const recentAppointments = await getRecentAppointments(5);
 
-    // Fetch recent appointments (limit 10)
-    const recentAppointments = await getRecentAppointments(10);
+    // ✅ FIX: handle fee object correctly
+    const earnings = recentAppointments.reduce((sum, appt) => {
+      if (typeof appt.fee === 'number') return sum + appt.fee;
+      if (typeof appt.fee === 'object' && appt.fee.total) return sum + appt.fee.total;
+      return sum;
+    }, 0);
 
-    // Calculate earnings (sum of appointment fees)
-    const earnings = recentAppointments.reduce((sum, appt) => sum + (appt.fee || 0), 0);
-
-    // Respond with dashboard JSON
     res.json({
       totalDoctors: doctors.length,
       totalPatients: patients.length,
