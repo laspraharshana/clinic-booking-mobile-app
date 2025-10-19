@@ -8,7 +8,7 @@ export const appointmentsRepo = {
 
   async getById(id: string): Promise<Appointment | null> {
     const d = await this.ref(id).get();
-    return d.exists ? ({ id: d.id, ...(d.data() as Omit<Appointment, 'id'>) }) : null;
+    return d.exists ? { id: d.id, ...(d.data() as Omit<Appointment, 'id'>) } : null;
   },
 
   async listByPatient(patientId: string): Promise<Appointment[]> {
