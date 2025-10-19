@@ -72,3 +72,35 @@ export async function getDashboardCtrl(_req: AuthedRequest, res: Response, next:
     next(e);
   }
 }
+/**
+ * ------------------------------
+ * 3️⃣ Controller: Get All Appointments
+ * ------------------------------
+ * Returns every appointment for the admin page
+ */
+import { db } from '../lib/firebase.js';
+
+export async function getAllAppointmentsCtrl(_req: any, res: Response, next: NextFunction) {
+  try {
+    const snapshot = await db.collection('appointments').orderBy('createdAt', 'desc').get();
+
+    const allAppointments = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        patientName: data.patientName || 'Unknown',
+        doctorName: data.doctorName || 'Unknown',
+        specialty: data.specialty || '',
+        date: data.date || '',
+        time: data.time || '',
+        status: data.status || 'pending',
+        mode: data.mode || 'in-person',
+        fee: data.fee?.total || 0,
+      };
+    });
+
+    res.status(200).json(allAppointments);
+  } catch (e) {
+    next(e);
+  }
+}
