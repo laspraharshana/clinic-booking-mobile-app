@@ -1,4 +1,4 @@
-// admin.controller.ts
+//src/controllers/admin.controller.ts
 import type { Response, NextFunction } from 'express';
 import { z } from 'zod';
 import type { AuthedRequest } from '../middleware/auth.js';

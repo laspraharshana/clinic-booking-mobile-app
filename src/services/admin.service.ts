@@ -28,7 +28,7 @@ export async function getAllPatients() {
 }
 
 /**
- * Get recent appointments (default limit = 10)
+ * Get recent appointments (default limit = 5)
  */
 
 export async function getRecentAppointments(limit = 5) {
