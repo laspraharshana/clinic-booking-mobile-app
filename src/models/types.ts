@@ -37,6 +37,7 @@ export type Appointment = {
   startUtc: number;
   endUtc: number;
   status: 'booked' | 'canceled';
+  mode?: 'online' | 'in-person';
   notes?: string;
   fee: Fee;
   createdAt: number;

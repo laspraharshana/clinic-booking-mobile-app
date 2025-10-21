@@ -80,24 +80,72 @@ export async function getDashboardCtrl(_req: AuthedRequest, res: Response, next:
  */
 import { db } from '../lib/firebase.js';
 
-export async function getAllAppointmentsCtrl(_req: any, res: Response, next: NextFunction) {
+export async function getAllAppointmentsCtrl(_req: any, res: Response, next: any) {
   try {
+    // Get all appointments (most recent first)
     const snapshot = await db.collection('appointments').orderBy('createdAt', 'desc').get();
 
-    const allAppointments = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        patientName: data.patientName || 'Unknown',
-        doctorName: data.doctorName || 'Unknown',
-        specialty: data.specialty || '',
-        date: data.date || '',
-        time: data.time || '',
-        status: data.status || 'pending',
-        mode: data.mode || 'in-person',
-        fee: data.fee?.total || 0,
-      };
-    });
+    // Map and fetch doctor info
+    const allAppointments = await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        const data = doc.data();
+
+        // -------------------------------
+        // Get doctor info (name, specialty, clinic)
+        // -------------------------------
+        let doctorName = 'Unknown';
+        let specialty = '';
+        let clinicName = '';
+
+        if (data.doctorId) {
+          const doctorSnap = await db.collection('doctors').doc(data.doctorId).get();
+          if (doctorSnap.exists) {
+            const docData = doctorSnap.data();
+            doctorName = docData?.name || 'Unknown';
+            specialty = docData?.specialty || '';
+            clinicName = docData?.clinicName || '';
+          }
+        }
+
+        // -------------------------------
+        // Convert timestamps (numbers) to ISO strings
+        // -------------------------------
+        const startUtcMs =
+          typeof data.startUtc === 'number'
+            ? data.startUtc > 1e12
+              ? data.startUtc
+              : data.startUtc * 1000
+            : null;
+        const endUtcMs =
+          typeof data.endUtc === 'number'
+            ? data.endUtc > 1e12
+              ? data.endUtc
+              : data.endUtc * 1000
+            : null;
+        const createdAtMs =
+          typeof data.createdAt === 'number'
+            ? data.createdAt > 1e12
+              ? data.createdAt
+              : data.createdAt * 1000
+            : null;
+
+        return {
+          id: doc.id,
+          patientName: data.patientName || 'Unknown',
+          doctorId: data.doctorId || '',
+          doctorName,
+          specialty,
+          clinicName,
+          startUtc: startUtcMs ? new Date(startUtcMs).toISOString() : null,
+          endUtc: endUtcMs ? new Date(endUtcMs).toISOString() : null,
+          createdAt: createdAtMs ? new Date(createdAtMs).toISOString() : null,
+          status: data.status || 'pending',
+          mode: data.mode || 'online',
+          fee: data.fee?.total || 0,
+          notes: data.notes || '',
+        };
+      }),
+    );
 
     res.status(200).json(allAppointments);
   } catch (e) {

@@ -1,3 +1,4 @@
+//src/services/admin.service.ts
 import { admin, db } from '../lib/firebase.js';
 import { usersRepo } from '../repositories/users.repo.js';
 import { doctorsRepo } from '../repositories/doctors.repo.js';
@@ -34,19 +35,53 @@ export async function getAllPatients() {
 export async function getRecentAppointments(limit = 5) {
   const snapshot = await db
     .collection('appointments')
-    .orderBy('createdAt', 'desc') // make sure you have a createdAt field
+    .orderBy('createdAt', 'desc')
     .limit(limit)
     .get();
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      patientName: data.patientName,
-      doctorName: data.doctorName,
-      time: data.time,
-      status: data.status,
-      fee: data.fee?.total || 0, //  Only send total fee numbe
-    };
-  });
+  // Parallel fetching of doctor details
+  const appointments = await Promise.all(
+    snapshot.docs.map(async (doc) => {
+      const data = doc.data();
+
+      let doctorName = 'Unknown';
+      let specialty = '';
+      let clinicName = '';
+
+      // ✅ If doctorId exists, fetch doctor info
+      if (data.doctorId) {
+        const doctorSnap = await db.collection('doctors').doc(data.doctorId).get();
+        if (doctorSnap.exists) {
+          const docData = doctorSnap.data();
+          doctorName = docData?.name || 'Unknown';
+          specialty = docData?.specialty || '';
+          clinicName = docData?.clinicName || '';
+        }
+      }
+
+      // Format readable time (if stored as UTC timestamp)
+      const time = data.startUtc
+        ? new Date(data.startUtc).toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+          })
+        : '-';
+
+      const date = data.startUtc ? new Date(data.startUtc).toLocaleDateString('en-US') : '-';
+
+      return {
+        id: doc.id,
+        patientName: data.patientName || 'Unknown',
+        doctorName,
+        specialty,
+        clinicName,
+        date,
+        time,
+        status: data.status || 'pending',
+        fee: data.fee?.total || 0,
+      };
+    }),
+  );
+
+  return appointments;
 }
