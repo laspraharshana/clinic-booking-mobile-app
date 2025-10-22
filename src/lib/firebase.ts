@@ -1,3 +1,4 @@
+//src/lib/firebase.ts
 import admin from 'firebase-admin';
 
 const useEmu = process.env.USE_FIRESTORE_EMULATOR === 'true';

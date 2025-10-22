@@ -1,3 +1,4 @@
+// src/app.ts
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -8,8 +9,11 @@ import appointmentsRouter from './routes/appointments.routes.js';
 import meRouter from './routes/me.routes.js';
 import adminUsersRouter from './routes/admin.users.routes.js';
 import adminSeedRouter from './routes/admin.seed.routes.js';
+
 import mePaymentRouter from './routes/me.payment.routes.js';
+
 import adminDashboardRouter from './routes/admin.dashboard.routes.js';
+import adminReportsRouter from './routes/admin.reports.routes.js';
 
 const app = express();
 
@@ -50,6 +54,7 @@ app.use('/v1/appointments', appointmentsRouter);
 app.use('/v1/admin/seed', adminSeedRouter);
 app.use('/v1/me/payment-methods', mePaymentRouter);
 app.use('/v1/admin', adminDashboardRouter);
+app.use('/v1/admin/reports', adminReportsRouter);
 
 // Error handler
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

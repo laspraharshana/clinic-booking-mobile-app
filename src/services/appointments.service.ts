@@ -79,6 +79,7 @@ export async function book(
       startUtc: slot.startUtc,
       endUtc: slot.endUtc,
       status: 'booked',
+      mode: 'online',
       notes: opts?.notes,
       fee,
       createdAt: now,

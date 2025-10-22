@@ -1,3 +1,4 @@
+//src/middleware/auth.ts
 import type { Request, Response, NextFunction } from 'express';
 import { admin } from '../lib/firebase.js';
 import type { DecodedIdToken } from 'firebase-admin/auth'; // <--- Add this import
